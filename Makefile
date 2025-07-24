@@ -16,27 +16,27 @@ help:
 
 # Start all services
 up:
-	docker-compose up -d
+	docker compose up -d
 
 # Start all services in foreground
 up-fg:
-	docker-compose up
+	docker compose up
 
 # Start all services and rebuild
 up-build:
-	docker-compose up -d --build
+	docker compose up -d --build
 
 # Stop all services
 down:
-	docker-compose down
+	docker compose down
 
 # Check service status
 status:
-	docker-compose ps
+	docker compose ps
 
 # View logs from all services
 logs:
-	docker-compose logs -f
+	docker compose logs -f
 
 # Clean generated files
 clean:
