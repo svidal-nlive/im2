@@ -1,3 +1,4 @@
+# Dockerfile Template for IM2 Services
 FROM python:3.11-slim
 
 WORKDIR /app
@@ -6,28 +7,34 @@ WORKDIR /app
 ENV PYTHONDONTWRITEBYTECODE=1 \
     PYTHONUNBUFFERED=1 \
     PIP_NO_CACHE_DIR=off \
-    PIP_DISABLE_PIP_VERSION_CHECK=on
+    PIP_DISABLE_PIP_VERSION_CHECK=on \
+    SERVICE_PORT=8000
 
 # Install system dependencies
 RUN apt-get update && apt-get install -y --no-install-recommends \
     curl \
+    # Add any additional dependencies here \
     && rm -rf /var/lib/apt/lists/*
 
-# Create non-root user
-RUN addgroup --system app && adduser --system --group app
+# Create user with dynamic UID/GID support
+ARG USER_ID=1000
+ARG GROUP_ID=1000
+RUN groupadd -g ${GROUP_ID} appgroup && \
+    useradd -m -u ${USER_ID} -g appgroup appuser
 
 # Copy requirements first for better caching
-COPY requirements.txt .
+COPY service-name/requirements.txt .
 RUN pip install --no-cache-dir -r requirements.txt
 
 # Copy service code
-COPY . .
+COPY service-name/ .
+COPY base_service.py .
 
 # Create necessary directories with proper permissions
-RUN mkdir -p /pipeline-data && chown -R app:app /pipeline-data
+RUN mkdir -p /pipeline-data && chown -R appuser:appgroup /pipeline-data
 
 # Switch to non-root user
-USER app
+USER appuser
 
 # Health check
 HEALTHCHECK --interval=30s --timeout=10s --start-period=5s --retries=3 \

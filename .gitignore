@@ -1,84 +1,108 @@
-# Python
+# Python cache files
 __pycache__/
 *.py[cod]
 *$py.class
 *.so
 .Python
+
+# Virtual environments
+.venv/
+venv/
+ENV/
 env/
-build/
-develop-eggs/
+
+# Distribution / packaging
 dist/
-downloads/
-eggs/
-.eggs/
-lib/
-lib64/
-parts/
-sdist/
-var/
+build/
 *.egg-info/
-.installed.cfg
 *.egg
-.pytest_cache/
-.coverage
+
+# Unit test / coverage reports
 htmlcov/
+.tox/
+.nox/
+.coverage
+.coverage.*
+.cache
+nosetests.xml
+coverage.xml
+*.cover
+.hypothesis/
+.pytest_cache/
 
-# Node.js
-node_modules/
-npm-debug.log
-yarn-debug.log
-yarn-error.log
-.pnpm-debug.log
-.npm
+# Jupyter Notebook
+.ipynb_checkpoints
 
-# Environment and credentials
+# Environment variables
 .env
 .env.local
 .env.development.local
 .env.test.local
 .env.production.local
-*.pem
-secrets/
-
-# VS Code
-.vscode/*
-!.vscode/settings.json
-!.vscode/tasks.json
-!.vscode/launch.json
-!.vscode/extensions.json
 
 # Docker
 .docker/
-docker-volumes/
+*.tar
+*.tar.gz
+*.img
 
-# Pipeline data directories
-pipeline-data/input/*
-pipeline-data/output/*
-pipeline-data/archive/*
-pipeline-data/error/*
-pipeline-data/logs/*
-pipeline-data/cover-art-cache/*
-pipeline-data/spleeter-input/*
-pipeline-data/demucs-input/*
-pipeline-data/orphaned/*
-!pipeline-data/input/.gitkeep
-!pipeline-data/output/.gitkeep
-!pipeline-data/archive/.gitkeep
-!pipeline-data/error/.gitkeep
-!pipeline-data/logs/.gitkeep
-!pipeline-data/cover-art-cache/.gitkeep
-!pipeline-data/spleeter-input/.gitkeep
-!pipeline-data/demucs-input/.gitkeep
-!pipeline-data/orphaned/.gitkeep
+# Data directories
+/pipeline-data/models/*/
+/pipeline-data/input/
+/pipeline-data/output/
+/pipeline-data/demucs-input/
+/pipeline-data/demucs-output/
+/pipeline-data/spleeter-input/
+/pipeline-data/spleeter-output/
+/pipeline-data/logs/
+/pipeline-data/error/
+/pipeline-data/archive/
+/pipeline-data/orphaned/
+/pipeline-data/cover-art-cache/
+/pipeline-data/recon-output/
 
-# OS-specific
-.DS_Store
-Thumbs.db
-ehthumbs.db
-Desktop.ini
-$RECYCLE.BIN/
+# Exception for placeholder directories
+!pipeline-data/*/README.md
+!pipeline-data/*/placeholder.txt
+!pipeline-data/*/keep.txt
+!pipeline-data/*/gitkeep.txt
+!pipeline-data/*/.gitkeep
 
-# Local development
+# Model files
+*.pt
+*.pth
+*.ckpt
+*.bin
+*.pb
+*.onnx
+*.tflite
+*.h5
+
+# IDE files
 .idea/
+.vscode/
 *.swp
 *.swo
+.project
+.pydevproject
+.settings/
+
+# Logs
+logs/
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# Node.js (for UI frontend)
+node_modules/
+.npm
+.yarn-integrity
+
+# Next.js
+.next/
+out/
+
+# Operating system files
+.DS_Store
+Thumbs.db

@@ -1,66 +1,42 @@
-.PHONY: help up down status logs clean test lint install
+.PHONY: help build up down logs ps reset-permissions
 
 # Default target
 help:
-	@echo "IM2 Audio Processing Pipeline - Make Targets"
-	@echo "----------------------------------------"
-	@echo "help     : Show this help message"
-	@echo "up       : Start all services"
-	@echo "down     : Stop all services"
-	@echo "status   : Check service status"
-	@echo "logs     : View logs from all services"
-	@echo "clean    : Remove generated files"
-	@echo "test     : Run tests"
-	@echo "lint     : Run linters"
-	@echo "install  : Install development dependencies"
+	@echo "Available commands:"
+	@echo "  make build             - Build all containers"
+	@echo "  make up                - Start all containers"
+	@echo "  make down              - Stop all containers"
+	@echo "  make logs              - View logs from all containers"
+	@echo "  make ps                - List running containers"
+	@echo "  make reset-permissions - Reset permissions for pipeline-data directory"
 
-# Start all services
+# Build containers
+build:
+	docker compose build
+
+# Start containers
 up:
 	docker compose up -d
 
-# Start all services in foreground
-up-fg:
-	docker compose up
-
-# Start all services and rebuild
-up-build:
-	docker compose up -d --build
-
-# Stop all services
+# Stop containers
 down:
 	docker compose down
 
-# Check service status
-status:
-	docker compose ps
-
-# View logs from all services
+# View logs
 logs:
 	docker compose logs -f
 
-# Clean generated files
-clean:
-	find . -type d -name "__pycache__" -exec rm -rf {} +
-	find . -type f -name "*.pyc" -delete
-	find . -type f -name "*.pyo" -delete
-	find . -type f -name "*.pyd" -delete
-	find . -type f -name ".coverage" -delete
-	find . -type d -name "*.egg-info" -exec rm -rf {} +
-	find . -type d -name "*.egg" -exec rm -rf {} +
-	find . -type d -name ".pytest_cache" -exec rm -rf {} +
-	find . -type d -name "htmlcov" -exec rm -rf {} +
-	find . -type d -name ".coverage" -exec rm -rf {} +
+# List containers
+ps:
+	docker compose ps
 
-# Run tests
-test:
-	@echo "Running tests..."
-	# To be implemented
-
-# Run linters
-lint:
-	@echo "Running linters..."
-	# To be implemented
-
-# Install development dependencies
-install:
-	pip install -r requirements-dev.txt
+# Reset permissions for pipeline-data directory
+reset-permissions:
+	@echo "Resetting permissions for pipeline-data directory..."
+	@mkdir -p pipeline-data
+	@source .env || (echo "Error: .env file not found. Using default values." && APP_USER_ID=1000 && APP_GROUP_ID=1000)
+	@sudo chown -R $${APP_USER_ID:-1000}:$${APP_GROUP_ID:-1000} pipeline-data
+	@sudo chmod -R 755 pipeline-data
+	@sudo find pipeline-data -type d -exec chmod 755 {} \;
+	@sudo find pipeline-data -type f -exec chmod 644 {} \;
+	@echo "Permissions reset successfully."

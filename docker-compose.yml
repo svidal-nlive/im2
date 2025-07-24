@@ -4,6 +4,9 @@ services:
     build: 
       context: ./modules/watcher
       dockerfile: Dockerfile
+      args:
+        - USER_ID=${APP_USER_ID:-1000}
+        - GROUP_ID=${APP_GROUP_ID:-1000}
     env_file: .env
     volumes:
       - ./pipeline-data:/pipeline-data
@@ -20,6 +23,9 @@ services:
     build: 
       context: ./modules/categorizer
       dockerfile: Dockerfile
+      args:
+        - USER_ID=${APP_USER_ID:-1000}
+        - GROUP_ID=${APP_GROUP_ID:-1000}
     env_file: .env
     volumes:
       - ./pipeline-data:/pipeline-data
@@ -34,8 +40,11 @@ services:
 
   queue:
     build: 
-      context: ./modules/queue
-      dockerfile: Dockerfile
+      context: ./modules
+      dockerfile: ./queue/Dockerfile
+      args:
+        - USER_ID=${APP_USER_ID:-1000}
+        - GROUP_ID=${APP_GROUP_ID:-1000}
     env_file: .env
     volumes:
       - ./pipeline-data:/pipeline-data
@@ -51,8 +60,11 @@ services:
 
   metadata-service:
     build: 
-      context: ./modules/metadata-service
-      dockerfile: Dockerfile
+      context: ./modules
+      dockerfile: ./metadata-service/Dockerfile
+      args:
+        - USER_ID=${APP_USER_ID:-1000}
+        - GROUP_ID=${APP_GROUP_ID:-1000}
     env_file: .env
     volumes:
       - ./pipeline-data:/pipeline-data
@@ -69,6 +81,9 @@ services:
     build: 
       context: ./modules/splitter-stager
       dockerfile: Dockerfile
+      args:
+        - USER_ID=${APP_USER_ID:-1000}
+        - GROUP_ID=${APP_GROUP_ID:-1000}
     env_file: .env
     volumes:
       - ./pipeline-data:/pipeline-data
@@ -86,6 +101,9 @@ services:
     build: 
       context: ./modules/spleeter
       dockerfile: Dockerfile
+      args:
+        - USER_ID=${APP_USER_ID:-1000}
+        - GROUP_ID=${APP_GROUP_ID:-1000}
     env_file: .env
     volumes:
       - ./pipeline-data:/pipeline-data
@@ -105,11 +123,15 @@ services:
 
   demucs:
     build: 
-      context: ./modules/demucs
-      dockerfile: Dockerfile
+      context: ./modules
+      dockerfile: ./demucs/Dockerfile
+      args:
+        - USER_ID=${APP_USER_ID:-1000}
+        - GROUP_ID=${APP_GROUP_ID:-1000}
     env_file: .env
     volumes:
       - ./pipeline-data:/pipeline-data
+      - ./pipeline-data/models/demucs:/home/demucs/.cache/torch
     depends_on:
       - splitter-stager
       - queue
@@ -128,6 +150,9 @@ services:
     build: 
       context: ./modules/audio-recon
       dockerfile: Dockerfile
+      args:
+        - USER_ID=${APP_USER_ID:-1000}
+        - GROUP_ID=${APP_GROUP_ID:-1000}
     env_file: .env
     volumes:
       - ./pipeline-data:/pipeline-data
@@ -146,6 +171,9 @@ services:
     build: 
       context: ./modules/output-organizer
       dockerfile: Dockerfile
+      args:
+        - USER_ID=${APP_USER_ID:-1000}
+        - GROUP_ID=${APP_GROUP_ID:-1000}
     env_file: .env
     volumes:
       - ./pipeline-data:/pipeline-data
@@ -163,6 +191,9 @@ services:
     build: 
       context: ./modules/ui-backend
       dockerfile: Dockerfile
+      args:
+        - USER_ID=${APP_USER_ID:-1000}
+        - GROUP_ID=${APP_GROUP_ID:-1000}
     env_file: .env
     volumes:
       - ./pipeline-data:/pipeline-data
@@ -181,6 +212,9 @@ services:
     build: 
       context: ./modules/ui-frontend
       dockerfile: Dockerfile
+      args:
+        - USER_ID=${APP_USER_ID:-1000}
+        - GROUP_ID=${APP_GROUP_ID:-1000}
     env_file: .env
     depends_on:
       - ui-backend
@@ -195,6 +229,9 @@ services:
     build: 
       context: ./modules/notifications
       dockerfile: Dockerfile
+      args:
+        - USER_ID=${APP_USER_ID:-1000}
+        - GROUP_ID=${APP_GROUP_ID:-1000}
     env_file: .env
     depends_on:
       - redis
