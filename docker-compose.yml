@@ -1,0 +1,253 @@
+version: '3.8'
+services:
+  watcher:
+    build: 
+      context: ./modules/watcher
+      dockerfile: Dockerfile
+    env_file: .env
+    volumes:
+      - ./pipeline-data:/pipeline-data
+    depends_on:
+      - queue
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8000/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+
+  categorizer:
+    build: 
+      context: ./modules/categorizer
+      dockerfile: Dockerfile
+    env_file: .env
+    volumes:
+      - ./pipeline-data:/pipeline-data
+    depends_on:
+      - queue
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8000/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+
+  queue:
+    build: 
+      context: ./modules/queue
+      dockerfile: Dockerfile
+    env_file: .env
+    volumes:
+      - ./pipeline-data:/pipeline-data
+    depends_on:
+      - postgres
+      - redis
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8000/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+
+  metadata-service:
+    build: 
+      context: ./modules/metadata-service
+      dockerfile: Dockerfile
+    env_file: .env
+    volumes:
+      - ./pipeline-data:/pipeline-data
+    depends_on:
+      - queue
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8000/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+
+  splitter-stager:
+    build: 
+      context: ./modules/splitter-stager
+      dockerfile: Dockerfile
+    env_file: .env
+    volumes:
+      - ./pipeline-data:/pipeline-data
+    depends_on:
+      - queue
+      - metadata-service
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8000/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+
+  spleeter:
+    build: 
+      context: ./modules/spleeter
+      dockerfile: Dockerfile
+    env_file: .env
+    volumes:
+      - ./pipeline-data:/pipeline-data
+    depends_on:
+      - splitter-stager
+      - queue
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8000/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+    deploy:
+      resources:
+        limits:
+          memory: 4G
+
+  demucs:
+    build: 
+      context: ./modules/demucs
+      dockerfile: Dockerfile
+    env_file: .env
+    volumes:
+      - ./pipeline-data:/pipeline-data
+    depends_on:
+      - splitter-stager
+      - queue
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8000/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+    deploy:
+      resources:
+        limits:
+          memory: 4G
+
+  audio-recon:
+    build: 
+      context: ./modules/audio-recon
+      dockerfile: Dockerfile
+    env_file: .env
+    volumes:
+      - ./pipeline-data:/pipeline-data
+    depends_on:
+      - spleeter
+      - demucs
+      - queue
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8000/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+
+  output-organizer:
+    build: 
+      context: ./modules/output-organizer
+      dockerfile: Dockerfile
+    env_file: .env
+    volumes:
+      - ./pipeline-data:/pipeline-data
+    depends_on:
+      - audio-recon
+      - queue
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8000/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+
+  ui-backend:
+    build: 
+      context: ./modules/ui-backend
+      dockerfile: Dockerfile
+    env_file: .env
+    volumes:
+      - ./pipeline-data:/pipeline-data
+    depends_on:
+      - queue
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8000/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+    ports:
+      - "8000:8000"
+
+  ui-frontend:
+    build: 
+      context: ./modules/ui-frontend
+      dockerfile: Dockerfile
+    env_file: .env
+    depends_on:
+      - ui-backend
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:3000/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+
+  notifications:
+    build: 
+      context: ./modules/notifications
+      dockerfile: Dockerfile
+    env_file: .env
+    depends_on:
+      - redis
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8000/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+
+  # Support services
+  redis:
+    image: redis:7-alpine
+    restart: unless-stopped
+    volumes:
+      - redis_data:/data
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+
+  postgres:
+    image: postgres:16-alpine
+    env_file: .env
+    volumes:
+      - pg_data:/var/lib/postgresql/data
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+
+  traefik:
+    image: traefik:v2.11
+    command:
+      - "--api.insecure=false"
+      - "--providers.docker=true"
+      - "--providers.docker.exposedbydefault=false"
+      - "--entrypoints.web.address=:80"
+      - "--entrypoints.websecure.address=:443"
+      - "--certificatesresolvers.myresolver.acme.tlschallenge=true"
+      - "--certificatesresolvers.myresolver.acme.email=admin@example.com"
+      - "--certificatesresolvers.myresolver.acme.storage=/letsencrypt/acme.json"
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+      - ./letsencrypt:/letsencrypt
+    restart: unless-stopped
+
+volumes:
+  pg_data:
+  redis_data:
