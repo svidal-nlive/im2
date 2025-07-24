@@ -83,17 +83,9 @@ The following services have been implemented with their core functionality:
 8. **Audio-Recon**: Recombination with metadata/artwork preservation
 9. **Output Organizer**: Smart organization with archiving and playlist generation
 10. **UI Backend**: FastAPI-based backend service with JWT authentication, job management endpoints, and system control functions
-11. **Notifications**: Multi-channel notification service with email, UI, webhook, PagerDuty and Slack support
-
-### In-Progress Services
-
-The following services are currently being implemented:
-
-1. **UI Frontend**: Web user interface with React and Next.js
-
-### Recently Completed
-
-1. **PipelineCtl**: Command-line tool for pipeline management (see details below)
+11. **UI Frontend**: Next.js 14 web interface with real-time job monitoring, file upload, and system management
+12. **Notifications**: Multi-channel notification service with email, UI, webhook, PagerDuty and Slack support
+13. **PipelineCtl**: Command-line tool for pipeline management (see details below)
 
 ## Pipeline Control Tool (pipelinectl)
 

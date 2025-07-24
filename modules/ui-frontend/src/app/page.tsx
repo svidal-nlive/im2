@@ -1,61 +1,67 @@
+import AppLayout from '@/components/layout/AppLayout';
+import Link from 'next/link';
+
 export default function Home() {
   return (
-    <main className="flex min-h-screen flex-col items-center justify-between p-24">
-      <div className="z-10 max-w-5xl w-full items-center justify-between font-mono text-sm lg:flex">
-        <h1 className="text-4xl font-bold">
-          IM2 - Ironclad Modular Audio Processing Stack
-        </h1>
+    <AppLayout>
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div className="py-10">
+          <header>
+            <h1 className="text-3xl font-bold leading-tight text-gray-900 dark:text-white">
+              IM2 - Ironclad Modular Audio Processing Stack
+            </h1>
+          </header>
+          
+          <div className="mt-10">
+            <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-4">
+              {/* Dashboard Cards */}
+              <Link href="/upload">
+                <div className="group bg-white dark:bg-gray-800 p-6 rounded-lg shadow-md hover:shadow-lg transition-all cursor-pointer">
+                  <h2 className="text-xl font-semibold text-gray-900 dark:text-white mb-2">
+                    Upload Files
+                  </h2>
+                  <p className="text-gray-600 dark:text-gray-300">
+                    Upload audio files for stem separation.
+                  </p>
+                </div>
+              </Link>
+              
+              <Link href="/jobs">
+                <div className="group bg-white dark:bg-gray-800 p-6 rounded-lg shadow-md hover:shadow-lg transition-all cursor-pointer">
+                  <h2 className="text-xl font-semibold text-gray-900 dark:text-white mb-2">
+                    Monitor Jobs
+                  </h2>
+                  <p className="text-gray-600 dark:text-gray-300">
+                    Track job progress and status in real time.
+                  </p>
+                </div>
+              </Link>
+              
+              <Link href="/files">
+                <div className="group bg-white dark:bg-gray-800 p-6 rounded-lg shadow-md hover:shadow-lg transition-all cursor-pointer">
+                  <h2 className="text-xl font-semibold text-gray-900 dark:text-white mb-2">
+                    Job History
+                  </h2>
+                  <p className="text-gray-600 dark:text-gray-300">
+                    Browse your past jobs and download results.
+                  </p>
+                </div>
+              </Link>
+              
+              <Link href="/system">
+                <div className="group bg-white dark:bg-gray-800 p-6 rounded-lg shadow-md hover:shadow-lg transition-all cursor-pointer">
+                  <h2 className="text-xl font-semibold text-gray-900 dark:text-white mb-2">
+                    System Status
+                  </h2>
+                  <p className="text-gray-600 dark:text-gray-300">
+                    View health and status of pipeline components.
+                  </p>
+                </div>
+              </Link>
+            </div>
+          </div>
+        </div>
       </div>
-
-      <div className="mb-32 grid text-center lg:max-w-5xl lg:w-full lg:mb-0 lg:grid-cols-4 lg:text-left">
-        <div className="group rounded-lg border border-transparent px-5 py-4 transition-colors hover:border-gray-300 hover:bg-gray-100 hover:dark:border-neutral-700 hover:dark:bg-neutral-800/30">
-          <h2 className="mb-3 text-2xl font-semibold">
-            Upload Files{' '}
-            <span className="inline-block transition-transform group-hover:translate-x-1 motion-reduce:transform-none">
-              -&gt;
-            </span>
-          </h2>
-          <p className="m-0 max-w-[30ch] text-sm opacity-50">
-            Upload audio files for stem separation.
-          </p>
-        </div>
-
-        <div className="group rounded-lg border border-transparent px-5 py-4 transition-colors hover:border-gray-300 hover:bg-gray-100 hover:dark:border-neutral-700 hover:dark:bg-neutral-800/30">
-          <h2 className="mb-3 text-2xl font-semibold">
-            Monitor Jobs{' '}
-            <span className="inline-block transition-transform group-hover:translate-x-1 motion-reduce:transform-none">
-              -&gt;
-            </span>
-          </h2>
-          <p className="m-0 max-w-[30ch] text-sm opacity-50">
-            Track job progress and status in real time.
-          </p>
-        </div>
-
-        <div className="group rounded-lg border border-transparent px-5 py-4 transition-colors hover:border-gray-300 hover:bg-gray-100 hover:dark:border-neutral-700 hover:dark:bg-neutral-800/30">
-          <h2 className="mb-3 text-2xl font-semibold">
-            Job History{' '}
-            <span className="inline-block transition-transform group-hover:translate-x-1 motion-reduce:transform-none">
-              -&gt;
-            </span>
-          </h2>
-          <p className="m-0 max-w-[30ch] text-sm opacity-50">
-            Browse your past jobs and download results.
-          </p>
-        </div>
-
-        <div className="group rounded-lg border border-transparent px-5 py-4 transition-colors hover:border-gray-300 hover:bg-gray-100 hover:dark:border-neutral-700 hover:dark:bg-neutral-800/30">
-          <h2 className="mb-3 text-2xl font-semibold">
-            System Status{' '}
-            <span className="inline-block transition-transform group-hover:translate-x-1 motion-reduce:transform-none">
-              -&gt;
-            </span>
-          </h2>
-          <p className="m-0 max-w-[30ch] text-sm opacity-50">
-            View system health and service status.
-          </p>
-        </div>
-      </div>
-    </main>
+    </AppLayout>
   );
 }
