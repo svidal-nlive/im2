@@ -34,9 +34,15 @@ ps:
 reset-permissions:
 	@echo "Resetting permissions for pipeline-data directory..."
 	@mkdir -p pipeline-data
-	@source .env || (echo "Error: .env file not found. Using default values." && APP_USER_ID=1000 && APP_GROUP_ID=1000)
-	@sudo chown -R $${APP_USER_ID:-1000}:$${APP_GROUP_ID:-1000} pipeline-data
-	@sudo chmod -R 755 pipeline-data
-	@sudo find pipeline-data -type d -exec chmod 755 {} \;
-	@sudo find pipeline-data -type f -exec chmod 644 {} \;
+	@if [ -f .env ]; then \
+		export $$(grep -v '^#' .env | xargs); \
+		echo "Using APP_USER_ID=$${APP_USER_ID:-1000} and APP_GROUP_ID=$${APP_GROUP_ID:-1000}"; \
+	else \
+		echo "Warning: .env file not found. Using default values (1000:1000)."; \
+		export APP_USER_ID=1000 APP_GROUP_ID=1000; \
+	fi; \
+	sudo chown -R $${APP_USER_ID:-1000}:$${APP_GROUP_ID:-1000} pipeline-data; \
+	sudo chmod -R 755 pipeline-data; \
+	sudo find pipeline-data -type d -exec chmod 755 {} \;; \
+	sudo find pipeline-data -type f -exec chmod 644 {} \;
 	@echo "Permissions reset successfully."
